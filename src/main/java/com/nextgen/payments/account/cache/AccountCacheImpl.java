@@ -7,6 +7,13 @@ import org.springframework.stereotype.Component;
 
 import com.nextgen.payments.account.dao.Account;
 
+/**
+ * An implementation of {@link AccountCache}.
+ * This holds all the {@link Account}s in memory and acts like a in-memory DB.
+ * 
+ * @author kgondrala
+ *
+ */
 @Component
 public class AccountCacheImpl implements AccountCache {
 

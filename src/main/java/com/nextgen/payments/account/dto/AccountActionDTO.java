@@ -2,6 +2,12 @@ package com.nextgen.payments.account.dto;
 
 import com.nextgen.payments.AccountActionType;
 
+/**
+ * A Data Transfer Object for Account actions submitted as part of batch file.
+ * 
+ * @author kgondrala
+ *
+ */
 public class AccountActionDTO {
 
 	private AccountActionType type;
@@ -22,8 +28,6 @@ public class AccountActionDTO {
 		return amount;
 	}
 	
-	
-	// TODO - remove this method
 	@Override
 	public String toString() {
 		return type + " " + userName + " " + (cardNumber == null ? "" : cardNumber) + " $" + amount;

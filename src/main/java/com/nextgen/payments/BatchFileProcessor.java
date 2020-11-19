@@ -16,6 +16,12 @@ import com.nextgen.payments.account.dto.AccountActionDTO;
 import com.nextgen.payments.account.service.AccountService;
 import com.nextgen.payments.exception.PaymentException;
 
+/**
+ * Processes the batch file.
+ * 
+ * @author kgondrala
+ *
+ */
 @Component
 public class BatchFileProcessor {
 
@@ -33,7 +39,12 @@ public class BatchFileProcessor {
 		printBatchResponse(batchResponse);
 	}
 	
-	
+	/**
+	 * reads data from the input file and returns AccountAction objects to further process.
+	 * 
+	 * @param fileName batch file name
+	 * @return list List<AccountActionDTO>
+	 */
 	private List<AccountActionDTO> readBatchFile(String fileName) {
 		List<AccountActionDTO> list = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -44,13 +55,17 @@ public class BatchFileProcessor {
 			}
 
 		} catch (IOException e) {
-			e.printStackTrace(); // TODO
+			logger.error("Unable to read the file " + fileName, e);
 		}
 		
 		return list;
-
 	}
 	
+	/**
+	 * this method processes all the Account action requests and returns the batch response 
+	 * @param list List of Account Action requests
+	 * @return list List of Account Action responses
+	 */
 	private List<String> process(List<AccountActionDTO> list) {
 
 		List<String> batchResponse = new ArrayList<>();
@@ -70,6 +85,12 @@ public class BatchFileProcessor {
 		return batchResponse;
 	}
 	
+	/**
+	 * Adds an account with the give information
+	 * 
+	 * @param dto {@link AccountActionDTO}
+	 * @return string status
+	 */
 	private String add(AccountActionDTO dto) {
 		
 		String status = "success";
@@ -82,7 +103,12 @@ public class BatchFileProcessor {
 		return String.format("%s %s %s", dto.getType().toString(), dto.getUserName(), status);
 	}
 	
-	
+	/**
+	 * charges on the account for the requested amount
+	 * 
+	 * @param dto {@link AccountActionDTO}
+	 * @return string status
+	 */
 	private String charge(AccountActionDTO dto) {
 		String status = null;
 		try {
@@ -94,6 +120,12 @@ public class BatchFileProcessor {
 		return String.format("%s %s %s", dto.getType().toString(), dto.getUserName(), status);
 	}
 	
+	/**
+	 * credits to the account for the requested amount
+	 * 
+	 * @param dto {@link AccountActionDTO}
+	 * @return  string status
+	 */
 	private String credit(AccountActionDTO dto) {
 		String status = null;
 		try {
@@ -105,7 +137,11 @@ public class BatchFileProcessor {
 		return String.format("%s %s %s", dto.getType().toString(), dto.getUserName(), status);
 	}
 	
-	
+	/**
+	 * prints the Batch File content to the console
+	 * 
+	 * @param list List of {@link AccountActionDTO}
+	 */
 	private void printBatchFile(List<AccountActionDTO> list) {
 		logger.info("\n\n-------------------- Batch File Start ----------");
 		if(list != null) {
@@ -116,6 +152,11 @@ public class BatchFileProcessor {
 		logger.info("-------------------- Batch File End ----------");
 	}
 	
+	/**
+	 * prints the batch response to the console
+	 * 
+	 * @param list List of Account Action responses
+	 */
 	private void printBatchResponse(List<String> list) {
 		logger.info("\n\n-------------------- Batch Response Start ----------");
 		if(list != null) {
@@ -126,7 +167,12 @@ public class BatchFileProcessor {
 		logger.info("-------------------- Batch Response End ----------");
 	}
 	
-
+	/**
+	 * converts the each batch file line to an {@link AccountActionDTO} object.
+	 * 
+	 * @param line record from the batch file
+	 * @return AccountActionDTO
+	 */
 	private AccountActionDTO toRecord(String line) {
 		String[] arr = line.split(RECORD_FIELD_DELIMITER);
 		String type = arr[0];

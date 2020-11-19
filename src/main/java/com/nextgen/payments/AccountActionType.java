@@ -1,5 +1,11 @@
 package com.nextgen.payments;
 
+/**
+ * enum representing all the supported operations on the {@link Account}
+ * 
+ * @author kgondrala
+ *
+ */
 public enum AccountActionType {
 
 	Add("Add"),
