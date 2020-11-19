@@ -2,13 +2,21 @@
 
 
 <h3>Implementation Details:</h3>
-A SpringBoot based standalone application which processes batch file(s). The current version supports <b>Add</b>, <b>Charge</b>, <b>Credit</b> as the batch file operations on Accounts. 
+A SpringBoot based commandline application which processes batch file(s). The current version supports <b>Add</b>, <b>Charge</b>, <b>Credit</b> as the batch file operations on Accounts. 
+
+
+<h3>NextgenApplication:</h3>
+A SpringBoot based commandline application which processes batch file(s). 
+
+
+<h3>BatchFileProcessor:</h3>
+Reads the batch file, and converts all the file records to AccountActions. All these AccountActions are processed and a Batch response is generated.
 
 
 <h3>Request flow:</h3>
 
 ```
-NextgenApplication -->  BatchFileProcessor -->  AccountService -->  AccountDao  -->  AccountCache (acts like DB)
+NextgenApplication -> BatchFileProcessor -> AccountService -> AccountDao -> AccountCache (acts like DB)
 ```
 
 
