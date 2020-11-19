@@ -7,12 +7,14 @@ A SpringBoot based standalone application which processes batch file(s). The cur
 
 
 <h3>Request flow:</h3>
+
 ```
 NextgenApplication -->  BatchFileProcessor -->  AccountService -->  AccountDao  -->  AccountCache (acts like DB)
 ```
 
 
 <h3>Application Running Instructions:</h3>
+
 Pass the batch file name as VM variable
 ```
 -Dfile.name=txns
