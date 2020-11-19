@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.nextgen.payments.account.dto.AccountActionDTO;
 import com.nextgen.payments.account.service.AccountService;
+import com.nextgen.payments.account.validator.AccountValidator;
 import com.nextgen.payments.exception.PaymentException;
 
 /**
@@ -99,6 +100,8 @@ public class BatchFileProcessor {
 		
 		String status = "success";
 		try {
+			
+			AccountValidator.validateCardNumber(dto.getCardNumber());
 			accountService.add(dto);
 			
 		} catch(PaymentException e) {
