@@ -17,10 +17,9 @@ import com.nextgen.payments.account.service.AccountService;
 import com.nextgen.payments.exception.PaymentException;
 
 /**
- * Processes the batch file.
+ * processes the NextGen Payments Batch file.
  * 
  * @author kgondrala
- *
  */
 @Component
 public class BatchFileProcessor {
@@ -33,6 +32,10 @@ public class BatchFileProcessor {
 	public void process(String fileName) {
 
 		List<AccountActionDTO> list = readBatchFile(fileName);
+		if(list == null) {
+			return;
+		}
+		
 		printBatchFile(list);
 		
 		List<String>  batchResponse = process(list);
@@ -56,6 +59,7 @@ public class BatchFileProcessor {
 
 		} catch (IOException e) {
 			logger.error("Unable to read the file " + fileName, e);
+			return null;
 		}
 		
 		return list;
