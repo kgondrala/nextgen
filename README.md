@@ -1,5 +1,4 @@
-# nextgen
-<h2>NextGen Payments System</h2>
+# NextGen Payments System
 
 
 <h3>Implementation Details:</h3>
