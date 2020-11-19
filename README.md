@@ -2,7 +2,7 @@
 
 
 <h3>Implementation Details:</h3>
-A SpringBoot based standalone application which processes batch file(s). The current version supports **Add**, **Charge**, **Credit** as the batch file operations on Accounts. 
+A SpringBoot based standalone application which processes batch file(s). The current version supports <b>Add</b>, <b>Charge</b>, <b>Credit</b> as the batch file operations on Accounts. 
 
 
 <h3>Request flow:</h3>
