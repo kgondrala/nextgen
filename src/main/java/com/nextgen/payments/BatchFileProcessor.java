@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,8 @@ import com.nextgen.payments.exception.PaymentException;
 @Component
 public class BatchFileProcessor {
 
+	private static final Logger logger = Logger.getLogger(BatchFileProcessor.class);
+	
 	@Autowired
 	private AccountService accountService;
 	
@@ -104,23 +107,23 @@ public class BatchFileProcessor {
 	
 	
 	private void printBatchFile(List<AccountActionDTO> list) {
-		System.out.println("\n\n-------------------- Batch File Start ----------");
+		logger.info("\n\n-------------------- Batch File Start ----------");
 		if(list != null) {
 			for (AccountActionDTO record : list) {
-				System.out.println(record);
+				logger.info(record);
 			}
 		}
-		System.out.println("-------------------- Batch File End ----------");
+		logger.info("-------------------- Batch File End ----------");
 	}
 	
 	private void printBatchResponse(List<String> list) {
-		System.out.println("\n\n-------------------- Batch Response Start ----------");
+		logger.info("\n\n-------------------- Batch Response Start ----------");
 		if(list != null) {
 			for (String response : list) {
-				System.out.println(response);
+				logger.info(response);
 			}
 		}
-		System.out.println("-------------------- Batch Response End ----------");
+		logger.info("-------------------- Batch Response End ----------");
 	}
 	
 

@@ -13,7 +13,7 @@ public class NextgenApplication implements CommandLineRunner {
 	private String fileName;
 	
 	@Autowired
-	private BatchFileProcessor batchService;
+	private BatchFileProcessor batchFileProcessor;
 	
 	public static void main(String[] args) {
 		
@@ -22,10 +22,6 @@ public class NextgenApplication implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-		
-		// System.out.println("File Name: " + this.fileName);
-		batchService.process(fileName);
-		
+		batchFileProcessor.process(fileName);
 	}
-
 }
