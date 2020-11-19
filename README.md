@@ -10,8 +10,7 @@ A SpringBoot based standalone application which processes batch file(s). The cur
 <h3>Request flow:</h3>
 
 ```
-NextgenApplication   -->    BatchFileProcessor   -->    AccountService   -->    AccountDaoe   -->    AccountCache (acts like DB)
-
+NextgenApplication -->  BatchFileProcessor -->  AccountService -->  AccountDao  -->  AccountCache (acts like DB)
 ```
 
 
