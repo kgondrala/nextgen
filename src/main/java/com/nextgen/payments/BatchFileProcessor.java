@@ -6,7 +6,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +35,13 @@ public class BatchFileProcessor {
 	
 	public void process(String fileName) {
 
-		List<AccountActionDTO> list = readBatchFile(fileName);
-		if(list == null) {
+		Map<String, List<AccountActionDTO>> map = readBatchFile(fileName);
+		if(map == null) {
 			return;
 		}
 		
-		printBatchFile(list);
+		Map<String, String>  batchResponse = process(map);
 		
-		List<String>  batchResponse = process(list);
 		printBatchResponse(batchResponse);
 	}
 	
@@ -47,15 +49,24 @@ public class BatchFileProcessor {
 	 * reads data from the input file and returns AccountAction objects to further process.
 	 * 
 	 * @param fileName batch file name
-	 * @return list List<AccountActionDTO>
+	 * @return map Map<String, List<AccountActionDTO>>
 	 */
-	private List<AccountActionDTO> readBatchFile(String fileName) {
-		List<AccountActionDTO> list = new ArrayList<>();
+	private Map<String, List<AccountActionDTO>> readBatchFile(String fileName) {
+		
+		Map<String, List<AccountActionDTO>> map = new HashMap<>();
+		
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 
 			String line;
+			logger.info("\n\n\n");
 			while ((line = br.readLine()) != null) {
-				list.add(toRecord(line));
+				logger.info(line);
+				AccountActionDTO dto = toRecord(line);
+				
+				if(!map.containsKey(dto.getUserName())) {
+					map.put(dto.getUserName(), new ArrayList<>());
+				}
+				map.get(dto.getUserName()).add(dto);
 			}
 
 		} catch (IOException e) {
@@ -63,28 +74,33 @@ public class BatchFileProcessor {
 			return null;
 		}
 		
-		return list;
+		return map;
 	}
 	
 	/**
 	 * this method processes all the Account action requests and returns the batch response 
 	 * @param list List of Account Action requests
-	 * @return list List of Account Action responses
+	 * @return map Map of AccountIds and its Account Action response
 	 */
-	private List<String> process(List<AccountActionDTO> list) {
+	private Map<String, String> process(Map<String, List<AccountActionDTO>> map) {
 
-		List<String> batchResponse = new ArrayList<>();
+		Map<String, String> batchResponse = new HashMap<>();
 		
-		for(AccountActionDTO dto: list) {
+		for(String accountId: map.keySet()) {
 			
-			String response = null;
-			
-			switch(dto.getType()) {
-				case Add: response = add(dto); break;
-				case Charge: response = charge(dto); break;
-				case Credit: response = credit(dto); break;
+			List<AccountActionDTO> list = map.get(accountId);
+			for(AccountActionDTO dto : list) {
+				String response = null;
+				
+				switch(dto.getType()) {
+					case Add: response = add(dto); break;
+					case Charge: response = charge(dto); break;
+					case Credit: response = credit(dto); break;
+				}
+				batchResponse.put(accountId, response);
 			}
-			batchResponse.add(response);
+			
+
 		}
 		
 		return batchResponse;
@@ -107,7 +123,7 @@ public class BatchFileProcessor {
 		} catch(PaymentException e) {
 			status = "error";
 		}
-		return String.format("%s %s %s", dto.getType().toString(), dto.getUserName(), status);
+		return String.format("%s: %s", dto.getUserName(), status);
 	}
 	
 	/**
@@ -124,14 +140,14 @@ public class BatchFileProcessor {
 		} catch(PaymentException e) {
 			status = "error";
 		}
-		return String.format("%s %s %s", dto.getType().toString(), dto.getUserName(), status);
+		return String.format("%s: %s", dto.getUserName(), status);
 	}
 	
 	/**
 	 * credits to the account for the requested amount
 	 * 
 	 * @param dto {@link AccountActionDTO}
-	 * @return  string status
+	 * @return  string status 
 	 */
 	private String credit(AccountActionDTO dto) {
 		String status = null;
@@ -141,37 +157,25 @@ public class BatchFileProcessor {
 		} catch(PaymentException e) {
 			status = "error";
 		}
-		return String.format("%s %s %s", dto.getType().toString(), dto.getUserName(), status);
-	}
-	
-	/**
-	 * prints the Batch File content to the console
-	 * 
-	 * @param list List of {@link AccountActionDTO}
-	 */
-	private void printBatchFile(List<AccountActionDTO> list) {
-		logger.info("\n\n-------------------- Batch File Start ----------");
-		if(list != null) {
-			for (AccountActionDTO record : list) {
-				logger.info(record);
-			}
-		}
-		logger.info("-------------------- Batch File End ----------");
+		return String.format("%s: %s", dto.getUserName(), status);
 	}
 	
 	/**
 	 * prints the batch response to the console
 	 * 
-	 * @param list List of Account Action responses
+	 * @param map Map of Account Ids and its Account Action responses
 	 */
-	private void printBatchResponse(List<String> list) {
-		logger.info("\n\n-------------------- Batch Response Start ----------");
-		if(list != null) {
-			for (String response : list) {
-				logger.info(response);
+	private void printBatchResponse(Map<String, String> map) {
+		
+		logger.info("\n\n");
+		
+		if(map != null) {
+			List<String> list = new ArrayList<>(map.keySet());
+			Collections.sort(list);
+			for (String accountId : list) {
+				logger.info(map.get(accountId));
 			}
 		}
-		logger.info("-------------------- Batch Response End ----------");
 	}
 	
 	/**
