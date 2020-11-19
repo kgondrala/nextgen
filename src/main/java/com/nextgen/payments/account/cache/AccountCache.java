@@ -13,5 +13,7 @@ public interface AccountCache {
 	void add(Account account);
 	
 	Account get(String userName);
+	
+	void update(Account account);
 
 }

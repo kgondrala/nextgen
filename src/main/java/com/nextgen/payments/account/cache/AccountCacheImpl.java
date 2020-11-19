@@ -28,4 +28,10 @@ public class AccountCacheImpl implements AccountCache {
 	public Account get(String userName) {
 		return map.get(userName);
 	}
+	
+	@Override
+	public void update(Account account) {
+		map.put(account.getUserName(), account);
+	}
+	
 }

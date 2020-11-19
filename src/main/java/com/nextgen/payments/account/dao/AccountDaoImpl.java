@@ -27,56 +27,30 @@ public class AccountDaoImpl implements AccountDao {
 	 * @return void
 	 */
 	@Override
-	public void add(Account account) {
+	public void create(Account account) {
 		cache.add(account);
 	}
 	
 	/**
-	 * charges the amount on user's {@link Account}
+	 * update the {@link Account} to Cache.
 	 * 
 	 * @param account user account
-	 * @return long account balance
-	 * @throws @{link PaymentException} if provided amount is invalid or does not have sufficient balance.
+	 * @return void
 	 */
 	@Override
-	public long charge(Account account) {
-		
-		Account cacheAccount = cache.get(account.getUserName());
-		if(cacheAccount == null) {
-			String msg = String.format("Account - %s is invalid", account.getUserName());
-			throw new InvalidAccountException(msg);
-		}
-		
-		long charge = account.getAmount();
-		long balance = cacheAccount.getAmount();
-		
-		if(charge > balance) {
-			throw new InsufficientFundsException("Unable to 'Charge' due to insufficent balance");
-		}
-		 balance -= charge;
-		cacheAccount.setAmount(balance);
-		return balance;
+	public void update(Account account) {
+		cache.update(account);
 	}
 	
 	/**
-	 * credits the amount to user's {@link Account}
+	 * gets {@link Account} given AccountId
 	 * 
-	 * @param account user account
-	 * @return long account balance
-	 * @throws @{link PaymentException} if provided amount is invalid.
+	 * @param accountId User Account Id
+	 * @return account user account
 	 */
 	@Override
-	public long credit(Account account) {
-		
-		Account cacheAccount = cache.get(account.getUserName());
-		if(cacheAccount == null) {
-			String msg = String.format("Account - %s is invalid", account.getUserName());
-			throw new InvalidAccountException(msg);
-		}
-		
-		long totalAmount = cacheAccount.getAmount() + account.getAmount();
-		cacheAccount.setAmount(totalAmount);
-		return totalAmount;
+	public Account get(String accountId) {
+		return cache.get(accountId);
 	}
 
 }

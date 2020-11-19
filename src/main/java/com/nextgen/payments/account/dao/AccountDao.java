@@ -8,10 +8,10 @@ package com.nextgen.payments.account.dao;
  */
 public interface AccountDao {
 
-	void add(Account account);
+	void create(Account account);
 	
-	long charge(Account account);
+	Account get(String accountId);
 	
-	long credit(Account account);
+	void update(Account account);
 
 }
