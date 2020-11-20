@@ -1,6 +1,7 @@
 package com.nextgen.payments.account.dto;
 
 import com.nextgen.payments.AccountActionType;
+import com.nextgen.payments.CardType;
 
 /**
  * A Data Transfer Object for Account actions submitted as part of batch file.
@@ -11,6 +12,7 @@ import com.nextgen.payments.AccountActionType;
 public class AccountActionDTO {
 
 	private AccountActionType type;
+	private CardType cardType;
 	private String userName;
 	private String cardNumber;
 	private long amount;
@@ -27,10 +29,8 @@ public class AccountActionDTO {
 	public long getAmount() {
 		return amount;
 	}
-	
-	@Override
-	public String toString() {
-		return type + " " + userName + " " + (cardNumber == null ? "" : cardNumber) + " $" + amount;
+	public CardType getCardType() {
+		return cardType;
 	}
 	
 	public static class Builder {
@@ -38,6 +38,7 @@ public class AccountActionDTO {
 		private String userName;
 		private String cardNumber;
 		private long amount;
+		private String cardType;
 		
 		public Builder withType(String type) {
 			this.type = type;
@@ -59,14 +60,28 @@ public class AccountActionDTO {
 			return this;
 		}
 		
+		public Builder cardType(String cardType) {
+			this.cardType = cardType;
+			return this;
+		}
+		
 		public AccountActionDTO build() {
 			AccountActionDTO r = new AccountActionDTO();
 			r.type = AccountActionType.valueOf(this.type);
 			r.userName = this.userName;
 			r.cardNumber = this.cardNumber;
 			r.amount = this.amount;
+			r.cardType = CardType.valueOf(this.cardType);
 			return r;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "AccountActionDTO [type=" + type + ", cardType=" + cardType + ", userName=" + userName + ", cardNumber="
+				+ cardNumber + ", amount=" + amount + "]";
+	}
+	
+
 
 }

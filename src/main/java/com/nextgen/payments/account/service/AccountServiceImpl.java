@@ -28,7 +28,27 @@ public class AccountServiceImpl implements AccountService {
 	 */
 	@Override
 	public long charge(AccountActionDTO dto) {
-		Account a = accountDao.get(dto.getUserName());
+		
+		Account a = accountDao.get(dto.getUserName(), dto.getCardType().toString());
+		if(a == null) {
+			String msg = String.format("Account - %s is invalid", dto.getUserName());
+			throw new InvalidAccountException(msg);
+		}
+		
+		long totalAmount = a.getAmount() + dto.getAmount();
+		a.setAmount(totalAmount);
+		accountDao.update(a);
+		return totalAmount;
+	}
+	
+	/**
+	 * 
+	 * @throws @{link PaymentException} if provided amount is invalid.
+	 */
+	@Override
+	public long credit(AccountActionDTO dto) {
+
+		Account a = accountDao.get(dto.getUserName(), dto.getCardType().toString());
 		
 		if(a == null) {
 			String msg = String.format("Account - %s is invalid", dto.getUserName());
@@ -45,24 +65,5 @@ public class AccountServiceImpl implements AccountService {
 		a.setAmount(balance);
 		accountDao.update(a);
 		return balance;
-	}
-	
-	/**
-	 * 
-	 * @throws @{link PaymentException} if provided amount is invalid.
-	 */
-	@Override
-	public long credit(AccountActionDTO dto) {
-		
-		Account a = accountDao.get(dto.getUserName());
-		if(a == null) {
-			String msg = String.format("Account - %s is invalid", dto.getUserName());
-			throw new InvalidAccountException(msg);
-		}
-		
-		long totalAmount = a.getAmount() + dto.getAmount();
-		a.setAmount(totalAmount);
-		accountDao.update(a);
-		return totalAmount;
 	}
 }

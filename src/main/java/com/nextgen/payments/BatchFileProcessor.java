@@ -40,7 +40,7 @@ public class BatchFileProcessor {
 			return;
 		}
 		
-		Map<String, String>  batchResponse = process(map);
+		Map<String, Map<String, String>>  batchResponse = process(map);
 		
 		printBatchResponse(batchResponse);
 	}
@@ -60,6 +60,10 @@ public class BatchFileProcessor {
 			String line;
 			logger.info("\n\n\n");
 			while ((line = br.readLine()) != null) {
+				
+				if(line == null || line.isBlank()) {
+					continue;
+				}
 				logger.info(line);
 				AccountActionDTO dto = toRecord(line);
 				
@@ -82,13 +86,13 @@ public class BatchFileProcessor {
 	 * @param list List of Account Action requests
 	 * @return map Map of AccountIds and its Account Action response
 	 */
-	private Map<String, String> process(Map<String, List<AccountActionDTO>> map) {
+	private Map<String, Map<String, String>> process(Map<String, List<AccountActionDTO>> map) {
 
-		Map<String, String> batchResponse = new HashMap<>();
+		Map<String, Map<String, String>> batchResponse = new HashMap<>();
 		
-		for(String accountId: map.keySet()) {
+		for(String userName: map.keySet()) {
 			
-			List<AccountActionDTO> list = map.get(accountId);
+			List<AccountActionDTO> list = map.get(userName);
 			for(AccountActionDTO dto : list) {
 				String response = null;
 				
@@ -97,10 +101,13 @@ public class BatchFileProcessor {
 					case Charge: response = charge(dto); break;
 					case Credit: response = credit(dto); break;
 				}
-				batchResponse.put(accountId, response);
+				Map<String, String> m = batchResponse.get(userName);
+				if(m == null) {
+					m = new HashMap<>();
+					batchResponse.put(userName, m);
+				}
+				m.put(dto.getCardType().toString(), response);
 			}
-			
-
 		}
 		
 		return batchResponse;
@@ -121,9 +128,10 @@ public class BatchFileProcessor {
 			accountService.add(dto);
 			
 		} catch(PaymentException e) {
+			// logger.error("add -->" + e.getMessage());
 			status = "error";
 		}
-		return String.format("%s: %s", dto.getUserName(), status);
+		return status;
 	}
 	
 	/**
@@ -138,9 +146,10 @@ public class BatchFileProcessor {
 			long balance = accountService.charge(dto);
 			status = "$" + balance;
 		} catch(PaymentException e) {
+			// logger.error("charge -->" + e.getMessage());
 			status = "error";
 		}
-		return String.format("%s: %s", dto.getUserName(), status);
+		return status;
 	}
 	
 	/**
@@ -155,9 +164,10 @@ public class BatchFileProcessor {
 			long balance = accountService.credit(dto);
 			status = "$" + balance;
 		} catch(PaymentException e) {
+			// logger.error("credit -->" + e.getMessage());
 			status = "error";
 		}
-		return String.format("%s: %s", dto.getUserName(), status);
+		return status;
 	}
 	
 	/**
@@ -165,15 +175,21 @@ public class BatchFileProcessor {
 	 * 
 	 * @param map Map of Account Ids and its Account Action responses
 	 */
-	private void printBatchResponse(Map<String, String> map) {
+	private void printBatchResponse(Map<String, Map<String, String>> map) {
 		
 		logger.info("\n\n");
 		
 		if(map != null) {
 			List<String> list = new ArrayList<>(map.keySet());
 			Collections.sort(list);
-			for (String accountId : list) {
-				logger.info(map.get(accountId));
+			
+			for (String userName : list) {
+				String str = "";
+				Map<String, String> accountMap = map.get(userName);
+				for(String key: accountMap.keySet()) {
+					str += String.format(" (%s) %s,", key, accountMap.get(key));
+				}
+				logger.info(String.format("%s: %s", userName, str));
 			}
 		}
 	}
@@ -188,14 +204,15 @@ public class BatchFileProcessor {
 		String[] arr = line.split(RECORD_FIELD_DELIMITER);
 		String type = arr[0];
 		String userName = arr[1];
+		String cardType = arr[2];
 		String cardNumber = null;
 		Long amount = null;
 
-		if (arr.length == 3) {
-			amount = Long.valueOf(arr[2].substring(1));
-		} else if (arr.length == 4) {
-			cardNumber = arr[2];
+		if (arr.length == 4) {
 			amount = Long.valueOf(arr[3].substring(1));
+		} else if (arr.length == 5) {
+			cardNumber = arr[3];
+			amount = Long.valueOf(arr[4].substring(1));
 		}
 
 		AccountActionDTO record = new AccountActionDTO.Builder()
@@ -203,7 +220,9 @@ public class BatchFileProcessor {
 								.userName(userName)
 								.cardNumber(cardNumber)
 								.amount(amount)
+								.cardType(cardType)
 								.build();
+		
 		return record;
 	}
 

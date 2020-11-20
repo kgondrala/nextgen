@@ -10,6 +10,7 @@ public class AccountMapper {
 		a.setUserName(dto.getUserName());
 		a.setCardNumber(dto.getCardNumber());
 		a.setAmount(dto.getAmount());
+		a.setCardType(dto.getCardType());
 		return a;
 	}
 }

@@ -23,7 +23,6 @@ public class NextgenApplication implements CommandLineRunner {
 	private BatchFileProcessor batchFileProcessor;
 	
 	public static void main(String[] args) {
-		
 		SpringApplication.run(NextgenApplication.class, args);
 	}
 	

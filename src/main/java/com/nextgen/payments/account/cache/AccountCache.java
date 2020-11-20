@@ -12,7 +12,7 @@ public interface AccountCache {
 
 	void add(Account account);
 	
-	Account get(String userName);
+	Account get(String userName, String cardType);
 	
 	void update(Account account);
 

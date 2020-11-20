@@ -10,7 +10,7 @@ public interface AccountDao {
 
 	void create(Account account);
 	
-	Account get(String accountId);
+	Account get(String userName, String cardType);
 	
 	void update(Account account);
 

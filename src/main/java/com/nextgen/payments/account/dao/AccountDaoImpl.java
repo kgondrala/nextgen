@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.nextgen.payments.account.cache.AccountCache;
-import com.nextgen.payments.exception.InsufficientFundsException;
-import com.nextgen.payments.exception.InvalidAccountException;
 
 /**
  * Implementation of {@link AccountDao}. 
@@ -49,8 +47,8 @@ public class AccountDaoImpl implements AccountDao {
 	 * @return account user account
 	 */
 	@Override
-	public Account get(String accountId) {
-		return cache.get(accountId);
+	public Account get(String userName, String cardType) {
+		return cache.get(userName, cardType);
 	}
 
 }

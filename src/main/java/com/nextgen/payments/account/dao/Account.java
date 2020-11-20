@@ -1,5 +1,7 @@
 package com.nextgen.payments.account.dao;
 
+import com.nextgen.payments.CardType;
+
 /**
  * Entity that holds the user account information
  * 
@@ -9,6 +11,7 @@ package com.nextgen.payments.account.dao;
 public class Account {
 	
 	private String userName;
+	private CardType cardType;
 	private String cardNumber;
 	private long amount;
 	
@@ -29,5 +32,11 @@ public class Account {
 	}
 	public void setAmount(long amount) {
 		this.amount = amount;
+	}
+	public void setCardType(CardType cardType) {
+		this.cardType = cardType;
+	}
+	public CardType getCardType() {
+		return cardType;
 	}
 }

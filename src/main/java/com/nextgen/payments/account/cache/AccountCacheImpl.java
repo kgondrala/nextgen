@@ -17,21 +17,31 @@ import com.nextgen.payments.account.dao.Account;
 @Component
 public class AccountCacheImpl implements AccountCache {
 
-	private Map<String, Account> map = new HashMap<>();
+	private Map<String, Map<String, Account>> map = new HashMap<>();
 	
 	@Override
 	public void add(Account account) {
-		map.put(account.getUserName(), account);
+		String userName = account.getUserName();
+		String cardType = account.getCardType().toString();
+		
+		Map<String, Account> accountMap = map.get(userName);
+		if(accountMap == null) {
+			accountMap = new HashMap<>();
+			map.put(userName, accountMap);
+		}
+		map.get(userName).put(cardType, account);
 	}
 	
 	@Override
-	public Account get(String userName) {
-		return map.get(userName);
+	public Account get(String userName, String cardType) {
+		Map<String, Account> accountMap = map.get(userName);
+		return accountMap.get(cardType);
 	}
 	
 	@Override
 	public void update(Account account) {
-		map.put(account.getUserName(), account);
+		Map<String, Account> accountMap = map.get(account.getUserName());
+		accountMap.put(account.getCardType().toString(), account);
 	}
 	
 }
